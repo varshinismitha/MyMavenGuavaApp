@@ -12,36 +12,45 @@ pipeline {
         }
 
         stage('Build') {
+            steps {pipeline {
+    agent any
+
+    tools {
+        maven 'Maven'
+    }
+
+    stages {
+
+        stage('Checkout') {
             steps {
-                sh 'mvn clean package'  // Run Maven build
+                git branch: 'master', url: 'https://github.com/varshinismitha/MyMavenGuavaApp.git'
             }
         }
 
-        stage('Test') {
+        stage('Build') {
             steps {
-                sh 'mvn test'  // Run unit tests
+                sh 'mvn clean package'
             }
         }
 
-        
-        
-       
-        stage('Run Application') {
+        stage('Archive') {
             steps {
-                // Start the JAR application
-                sh 'java -jar target/MyMavenApp-1.0-SNAPSHOT.jar'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
 
-        
     }
 
     post {
         success {
-            echo 'Build and deployment successful!'
+            echo 'Build SUCCESS '
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build FAILED '
         }
     }
 }
+                
+                
+        
+  
